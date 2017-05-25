@@ -4,68 +4,129 @@ const PA = 2;
 
 let matches = 0;
 
-function countup(){
-  matches = matches + 1;
+function countup() {
+  matches = matches + 1
+  return matches;
 }
 
 // チョキ大好きマンに対するアクション
-function actionAgainstChokiLover(){
+function actionAgainstChokiDaisukiman() {
   return GU;
 }
 
 // 表か裏かマンに対するアクション
-function actionAgainstOmoteUra(){
+function actionAgainstOmoteUra(matches) {
   const isEven = matches % 2 == 0;
   let result = PA;
-  if(isEven){
+  if (isEven) {
     result = GU;
   }
   return result;
 }
 
 // 帰ってきた表か裏かマンに対するアクション
-function actionAgainstOmoteUra2(){
+function actionAgainstOmoteUra2(matches) {
   const isEven = matches % 3 == 0;
   let result = GU;
-  if(isEven){
+  if (isEven) {
     result = CHOKI;
   }
   return result;
 }
 
 // 順番に出していくマンに対するアクション
-function actionAgainstJunban(){
-  const isEven = matches % 3 == 0;
-  let a = matches % 3 == 1;
-  if(isEven){
+function actionAgainstRotation(matches) {
+  const toReturnChoki = matches % 3 == 0;
+  const toReturnPa = matches % 3 == 1;
+  let result = GU;
+  if (toReturnChoki) {
     result = CHOKI;
-  } else if(a){
+  } else if (toReturnPa) {
     result = PA;
-  } else{
+  } else {
     result = GU;
   }
   return result;
 }
 
+// 帰ってきた順番に出していくマンに対するアクション
+function actionAgainstRotation2(matches) {
+  if(matches < 3) {
+    return CHOKI;
+  } else {
+    let history = cards();
+    let tail = Math.max(0, history.length - 1);
+    let lastCard = history[tail];
+    let beforeTail = Math.max(0, tail - 1);
+    let beforelastCard = history[beforeTail];
+    if(lastCard == GU) {
+      if(beforelastCard == CHOKI) {
+        return CHOKI;
+      } else {
+        return GU;
+      }
+    } else if (lastCard == CHOKI) {
+      if(beforelastCard == PA) {
+        return PA;
+      } else {
+        return CHOKI;
+      }
+    } else {
+      if(beforelastCard == GU) {
+        return GU;
+      } else {
+        return PA;
+      }
+    }
+  }
+}
+
+// ランダムに手を決める戦略
+function randomCard(){
+  let randomValue = Math.random();
+  if (randomValue < 0.33) {
+    return GU;
+  } else if (randomValue < 0.66) {
+    return CHOKI;
+  } else {
+    return PA;
+  }
+}
+
 /*
-チョキ大好きマン：fighter::choki-lover
+対戦相手名前まとめ
+チョキ大好きマン： fighter::choki-lover 
 表か裏かマン：fighter::odd-even
 帰ってきた表か裏かマン：fighter::on-third
 順番に出していくマン：fighter::rotation
+帰ってきた順番に出していくマン：fighter::returned-rotation
 */
 
-function action(oppornent){
+function action(oppornent) {
   console.log(oppornent);
+  let history = cards();
+  console.log(history);
+  console.log(history.length);
+  let tail = Math.max(0, history.length - 1);
+  let lastCard = history[tail];
+  console.log(lastCard);
+
   let result = GU;
-  countup();
-  if(oppornent == "fighter::choki-lover"){
-    result = actionAgainstChokiLover();
-  } else if(oppornent == "fighter::odd-even"){
-    result = actionAgainstOmoteUra();
-  } else if(oppornent == "fighter::on-third"){
-    result = actionAgainstOmoteUra2();
-  } else {
-    result = actionAgainstJunban();
+  // countup();
+  let matches = history.length + 1;
+  if (oppornent == "fighter::choki-lover") {
+    result = actionAgainstChokiDaisukiman(matches);
+  } else if (oppornent == "fighter::odd-even") {
+    result = actionAgainstOmoteUra(matches);
+  } else if (oppornent == "fighter::rotation") {
+    result = actionAgainstRotation(matches);
+  } else if (oppornent == "fighter::on-third"){
+    result = actionAgainstOmoteUra2(matches);
+  } else if (oppornent == "fighter::returned-rotation"){
+    result = actionAgainstRotation2(matches);
+  } else {  
+    result = randomCard(matches);
   }
   return result;
 }
+
