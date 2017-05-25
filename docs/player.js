@@ -49,7 +49,7 @@ function actionAgainstJunban(){
 
 /*
 チョキ大好きマン：fighter::choki-lover
-表か裏かマン：fighte::odd-even
+表か裏かマン：fighter::odd-even
 帰ってきた表か裏かマン：fighter::on-third
 順番に出していくマン：fighter::rotation
 */
